@@ -1,5 +1,5 @@
 <?php
-namespace koulab\UltimateTwitter;
+namespace koulab\UltimateTwitter\Middleware;
 
 use Psr\Http\Message\RequestInterface;
 

@@ -13,6 +13,7 @@ class Parser extends Crawler {
     public function getAuthenticityToken(){
         return $this->filter('input[name="authenticity_token"]')->attr('value');
     }
+
     public function getChallengeId(){
         return $this->filter('input[name="challenge_id"]')->attr('value');
     }
@@ -26,10 +27,10 @@ class Parser extends Crawler {
         $message = "";
         try{
             $message .= $this->filter('.message')->text();
-        }catch (\Exception $e){ }
+        }catch (\InvalidArgumentException $e){ }
         try{
             $message .= $this->filter('.confirm_title')->text();
-        }catch (\Exception $e){ }
+        }catch (\InvalidArgumentException $e){ }
         return $message;
     }
 

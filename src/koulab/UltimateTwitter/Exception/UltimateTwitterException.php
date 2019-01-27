@@ -1,3 +1,3 @@
 <?php
-namespace koulab\UltimateTwitter;
+namespace koulab\UltimateTwitter\Exception;
 class UltimateTwitterException extends \RuntimeException { }

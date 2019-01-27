@@ -2,6 +2,8 @@
 namespace koulab\UltimateTwitter;
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
+use koulab\UltimateTwitter\Exception\UltimateTwitterException;
+use koulab\UltimateTwitter\Middleware\AutomatedRotateProxyMiddleware;
 
 class Client{
     private $client;
@@ -39,7 +41,7 @@ class Client{
         $this->parser = new Parser();
         if(is_null($client) || !($client instanceof \GuzzleHttp\ClientInterface)){
             $stack = HandlerStack::create();
-            //$stack->after('cookies',new AutomatedRotateProxyMiddleware($proxy));
+            $stack->after('cookies',new AutomatedRotateProxyMiddleware($proxy));
             $stack->push(\GuzzleHttp\Middleware::retry(
                 function ($retries,\GuzzleHttp\Psr7\Request $request,$response,$exception){
                     if($retries >= 5){ return false; }
@@ -64,6 +66,23 @@ class Client{
         }
     }
 
+    public function setParserContent($html){
+        $this->parser->clear();
+        $this->parser->addHtmlContent($html,'UTF-8');
+    }
+    public function getAuthenticityToken(){
+        return $this->parser->getAuthenticityToken();
+    }
+    public function get($url,$params = []){
+        $aGet =  $this->getClient()->request('GET',$url,$params)->getBody()->getContents();
+        $this->setParserContent($aGet);
+        return $aGet;
+    }
+    public function post($url,$params = []){
+        $aPost = $this->getClient()->request('POST',$url,$params)->getBody()->getContents();
+        return $aPost;
+    }
+
     public function sendDirectMessage($screenName,$message,$confirm = false){
         $target = 'https://mobile.twitter.com/'.$screenName.'/messages';
 
@@ -72,22 +91,15 @@ class Client{
                 'referer'=>'https://mobile.twitter.com/'.$screenName.'/actions?commit=%E2%80%A2%E2%80%A2%E2%80%A2',
             ]
         ]);
-        //var_dump($response->getBody()->getContents());
 
-        $this->parser->clear();
-        $this->parser->addHtmlContent((string)$response->getBody()->getContents(),'UTF-8');
-
-        //var_dump($this->parser->getAuthenticityToken());
-
-        $token = $this->parser->getAuthenticityToken();
-        //var_dump($token);
+        $this->setParserContent((string)$response->getBody()->getContents());
 
         $response = $this->getClient()->request('POST',$target,[
             'headers'=>[
                 'referer'=>'https://mobile.twitter.com/'.$screenName.'/messages?',
             ],
             'form_params'=>[
-                'authenticity_token'=>$token,
+                'authenticity_token'=>$this->getAuthenticityToken(),
                 'message'=>[
                     'recipient_screen_name'=>$screenName,
                     'text'=>$message,
@@ -102,14 +114,15 @@ class Client{
             $this->parser->clear();
             $content = (string)$response->getBody()->getContents();
             $this->parser->addHtmlContent($content,'UTF-8');
-            var_dump($content);
             return $this->parser->getMessageClassString();
 
         }
-        return true;
+        return $response->getBody()->getContents();
 
 
     }
+
+
     public function verifyAccountChallenge($challengeType = 'RetypeEmail',$challengeValue = '',$tel = ''){
 
         if($challengeType != 'RetypeEmail'){
@@ -172,8 +185,7 @@ class Client{
             throw new UltimateTwitterException("Invalid credentials");
         }
 
-        $this->parser->clear();
-        $this->parser->addHtmlContent($response->getBody()->getContents(),'UTF-8');
+        $this->setParserContent((string)$response->getBody()->getContents());
 
         return $response->getBody()->getContents();
     }
