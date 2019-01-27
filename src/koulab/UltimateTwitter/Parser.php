@@ -1,6 +1,8 @@
 <?php
+namespace koulab\UltimateTwitter;
+use Symfony\Component\DomCrawler\Crawler;
 
-class Parser extends Symfony\Component\DomCrawler\Crawler {
+class Parser extends Crawler {
 
     public function __construct(?mixed $node = null, $uri = null, $baseHref = null)
     {
@@ -10,6 +12,25 @@ class Parser extends Symfony\Component\DomCrawler\Crawler {
 
     public function getAuthenticityToken(){
         return $this->filter('input[name="authenticity_token"]')->attr('value');
+    }
+    public function getChallengeId(){
+        return $this->filter('input[name="challenge_id"]')->attr('value');
+    }
+    public function getEncUserId(){
+        return $this->filter('input[name="enc_user_id"]')->attr('value');
+    }
+    public function getChallengeType(){
+        return $this->filter('input[name="challenge_type"]')->attr('value');
+    }
+    public function getMessageClassString(){
+        $message = "";
+        try{
+            $message .= $this->filter('.message')->text();
+        }catch (\Exception $e){ }
+        try{
+            $message .= $this->filter('.confirm_title')->text();
+        }catch (\Exception $e){ }
+        return $message;
     }
 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace koulab\UltimateTwitter\Proxy;
+namespace koulab\UltimateTwitter;
 class Proxy{
     private $address = [];
 
