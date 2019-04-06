@@ -1,6 +1,7 @@
 <?php
 namespace koulab\UltimateTwitter\Middleware;
 
+use koulab\UltimateTwitter\Proxy;
 use Psr\Http\Message\RequestInterface;
 
 class AutomatedRotateProxyMiddleware{

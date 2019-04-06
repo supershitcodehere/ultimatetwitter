@@ -8,6 +8,7 @@ use koulab\UltimateTwitter\Middleware\AutomatedRotateProxyMiddleware;
 class Client{
     private $client;
     private $proxy;
+    private $publicBearer = 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA';
 
     /**
      * @return array|Proxy
@@ -74,11 +75,13 @@ class Client{
         return $this->parser->getAuthenticityToken();
     }
     public function get($url,$params = []){
+        $params['headers']['Authorization'] = $this->publicBearer;
         $aGet =  $this->getClient()->request('GET',$url,$params)->getBody()->getContents();
         $this->setParserContent($aGet);
         return $aGet;
     }
     public function post($url,$params = []){
+        $params['headers']['Authorization'] =  $this->publicBearer;
         $aPost = $this->getClient()->request('POST',$url,$params)->getBody()->getContents();
         return $aPost;
     }
@@ -123,7 +126,7 @@ class Client{
     }
 
 
-    public function verifyAccountChallenge($challengeType = 'RetypeEmail',$challengeValue = '',$tel = ''){
+    private function verifyAccountChallenge($challengeType = 'RetypeEmail',$challengeValue = '',$tel = ''){
 
         if($challengeType != 'RetypeEmail'){
             $challengeValue = $tel;
@@ -141,13 +144,13 @@ class Client{
             ]
         ]);
     }
-    public function validateAccountChallengeAppear(){
+    public function bypassAccountChallenge(){
         try{
             $this->parser->getChallengeId();
             $this->parser->getChallengeType();
             $this->verifyAccountChallenge($this->parser->getChallengeType(),$this->email,$this->tel);
 
-        }catch (\Exception $e){ }
+        }catch (\InvalidArgumentException $e){ }
     }
     public function login($usernameOrEmail,$password,$email = null,$tel = null){
         $this->email = $email;
