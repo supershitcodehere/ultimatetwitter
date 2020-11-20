@@ -48,7 +48,7 @@ abstract class TwitterWeb{
         return false;
     }
 
-    public static function getDefaultDriverProfile(){
+    public static function getDefaultDriverProfile($host = 'http://127.0.0.1:4444'){
         $options = new ChromeOptions();
         $options->addArguments([
             //'--headless',
@@ -77,7 +77,7 @@ abstract class TwitterWeb{
         $caps->setCapability('pageLoadStrategy', 'none');
         $caps->setCapability(ChromeOptions::CAPABILITY, $options);
 
-        $driver = RemoteWebDriver::create('http://127.0.0.1:4444', $caps);
+        $driver = RemoteWebDriver::create($host, $caps);
 
         return $driver;
     }

@@ -40,7 +40,44 @@ class HomeTimeLinePage extends TwitterWeb {
         $this->intentAction('https://twitter.com/intent/retweet?tweet_id='.$tweet_id);
     }
 
-    public function tweet(string $tweet_body){
+    public function tweetWithImages(string $tweet_body,array $images_path) : HomeTimeLinePage{
+        $this
+            ->getDriver()
+            ->findElement(WebDriverBy::xpath("//a[@data-testid='SideNav_NewTweet_Button']"))
+            ->click()
+        ;
+        $this
+            ->waitWithXpath("//div[@data-testid='tweetTextarea_0']")
+        ;
+        $this
+            ->getDriver()
+            ->findElement(WebDriverBy::xpath("//div[@data-testid='tweetTextarea_0']"))
+            ->sendKeys($tweet_body)
+        ;
+
+        //fileInput
+        foreach($images_path as $path) {
+            $this
+                ->getDriver()
+                ->findElement(WebDriverBy::xpath("//input[@data-testid='fileInput']"))
+                ->sendKeys($path);
+            sleep(1);
+        }
+
+
+        $this->waitWithXpath("//div[@data-testid='tweetButton']");
+        $this
+            ->getDriver()
+            ->findElement(WebDriverBy::xpath("//div[@data-testid='tweetButton']"))
+            ->click()
+        ;
+
+        sleep(3);
+
+        return $this;
+    }
+
+    public function tweet(string $tweet_body) : HomeTimeLinePage{
         $this
             ->getDriver()
             ->findElement(WebDriverBy::xpath("//a[@data-testid='SideNav_NewTweet_Button']"))
@@ -63,5 +100,7 @@ class HomeTimeLinePage extends TwitterWeb {
         ;
 
         sleep(3);
+
+        return $this;
     }
 }

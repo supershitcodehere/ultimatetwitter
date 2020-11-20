@@ -35,6 +35,17 @@ class SeleniumTest extends TestCase
         $this->driver->takeScreenshot('tweet.png');
     }
 
+    public function testTweetWithImages(){
+        $login = new LoginPage($this->driver);
+        $ht = $login->login(getenv('TWITTER_USERNAME'),getenv('TWITTER_PASSWORD'));
+        $ht->tweetWithImages('テスト'.time(),[
+            'C:\\test.jpg',
+            'C:\\test2.jpg',
+            'C:\\test3.jpg',
+        ]);
+        $this->driver->takeScreenshot('tweet_with_images.png');
+    }
+
     public function testReTweet(){
         $login = new LoginPage($this->driver);
         $ht = $login->login(getenv('TWITTER_USERNAME'),getenv('TWITTER_PASSWORD'));
