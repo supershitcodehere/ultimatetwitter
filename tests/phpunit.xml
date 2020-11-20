@@ -1,0 +1,19 @@
+<phpunit backupGlobals="false"
+         backupStaticAttributes="false"
+         bootstrap="../vendor/autoload.php"
+         colors="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         verbose="false">
+    <filter>
+        <whitelist addUncoveredFilesFromWhitelist="false">
+            <directory>../src/koulab/</directory>
+        </whitelist>
+    </filter>
+    <testsuite>
+        <directory>.</directory>
+    </testsuite>
+</phpunit>
